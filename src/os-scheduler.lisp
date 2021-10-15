@@ -51,9 +51,17 @@
 ;;; ------------------- ;;;
 
 (defun create-workload (&key number-of-processes run-time (arrival-time 0))
-  (loop :repeat number-of-processes
-        :do (incf *pid*)
-        :collect (make-process :pid *pid* :run-time run-time :arrival-time arrival-time)))
+  "Create a number of processes (the workload) with the same arrival-time values, but different run-time values (especified in a list)."
+  (when (and (listp run-time) (= number-of-processes (length run-time)))
+    (loop :for process-run-time :in run-time
+          :do (incf *pid*)
+          :collect (make-process :pid *pid* :run-time process-run-time :arrival-time arrival-time))))
+
+(defun create-workload-with-same-run-time (&key number-of-processes run-time (arrival-time 0))
+  "Create a number of processes (the workload) with the same arrival-time values and the same run-time values."
+  (create-workload :number-of-processes number-of-processes
+                   :run-time (make-list number-of-processes :initial-element run-time)
+                   :arrival-time arrival-time))
 
 (defun print-workload (workload)
   (dolist (process workload)
