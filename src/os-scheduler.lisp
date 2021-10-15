@@ -47,7 +47,7 @@
 ;;; Auxiliary functions ;;;
 ;;; ------------------- ;;;
 
-(defun create-workload (&key number-of-processes run-time arrival-time)
+(defun create-workload (&key number-of-processes run-time (arrival-time 0))
   (loop :repeat number-of-processes
         :do (incf *pid*)
         :collect (make-process :pid *pid* :run-time run-time :arrival-time arrival-time)))
