@@ -2,6 +2,10 @@
 
 (declaim (optimize safety)) ; necesary to check the type of the slot "state"
 
+;;; ------------- ;;;
+;;; Process class ;;;
+;;; ------------- ;;;
+
 (defvar *pid* 0)
 (defconstant +max-run-time+ 10)
 
@@ -25,6 +29,10 @@
 (defun make-process (&key pid (state :ready) run-time (arrival-time 0))
   (make-instance 'process :pid pid :state state :run-time run-time :arrival-time arrival-time))
 
+;;; ------------------- ;;;
+;;; Auxiliary functions ;;;
+;;; ------------------- ;;;
+
 (defun create-processes (&optional (number-of-processes 2))
   (loop :repeat number-of-processes
         :do (incf *pid*)
@@ -35,9 +43,20 @@
     (format t "pid: ~d, state: ~a, run-time: ~d, arrival time: ~d~%"
             (:pid process) (:state process) (:run-time process) (:arrival-time process))))
 
+;;; ------------------- ;;;
+;;; Scheduling policies ;;;
+;;; ------------------- ;;;
+
+(defun no-policy (workload)
+  (dolist (process workload)
+      (loop :for i :from 1 :to (:run-time process)
+            :do (format t "Process ~d: ~d~%" (:pid process) i))))
+
+;;; ---------- ;;;
+;;; Simulation ;;;
+;;; ---------- ;;;
+
 (defun simulate (&optional (number-of-processes 2))
   (let ((workload (create-processes number-of-processes)))
     (print-workload workload)
-    (dolist (process workload)
-      (loop :for i :from 1 :to (:run-time process)
-            :do (format t "Process ~d: ~d~%" (:pid process) i)))))
+    (no-policy workload)))
