@@ -25,6 +25,9 @@
    (arrival-time :initarg :arrival-time
                  :initform 0
                  :accessor :arrival-time)
+   (start-time :initarg :start-time
+                    :initform nil
+                    :accessor :start-time)
    (completion-time :initarg :completion-time
                     :initform nil
                     :accessor :completion-time)))
@@ -57,6 +60,10 @@
     (format t "pid: ~d, state: ~a, run-time: ~d, arrival time: ~d~%"
             (:pid process) (:state process) (:run-time process) (:arrival-time process))))
 
+(defun print-process-run-time (process)
+  (loop :for i :from (:start-time process) :below (+ (:start-time process) (:run-time process))
+        :do (format t "Process ~d: ~d~%" (:pid process) (1+ i))))
+
 (defun turnaround-time (workload)
   (/ (reduce #'+ (mapcar #'process-turnaround-time workload))
      (length workload)))
@@ -69,11 +76,16 @@
 (defparameter *run-time* 3)
 (defparameter *arrival-time* 0)
 
-;; No policy
-(defun no-policy (workload)
-  (dolist (process workload)
-    (loop :for i :from 1 :to (:run-time process)
-          :do (format t "Process ~d: ~d~%" (:pid process) i))))
+;; "First In, First Out" policy
+(defun fifo (workload)
+  (let ((time 0))
+    (dolist (process workload)
+      (setf (:start-time process) time)
+      (setf (:state process) :running)
+      (print-process-run-time process)
+      (setf (:completion-time process) (+ (:start-time process) (:run-time process)))
+      (setf (:state process) :done)
+      (setf time (:completion-time process)))))
 
 ;;; ---------- ;;;
 ;;; Simulation ;;;
@@ -84,6 +96,6 @@
                                    :run-time run-time
                                    :arrival-time arrival-time)))
     (print-workload workload)
-    (no-policy workload)))
+    (fifo workload)))
 
 (simulate :number-of-processes 3)
