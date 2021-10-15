@@ -57,6 +57,10 @@
     (format t "pid: ~d, state: ~a, run-time: ~d, arrival time: ~d~%"
             (:pid process) (:state process) (:run-time process) (:arrival-time process))))
 
+(defun turnaround-time (workload)
+  (/ (reduce #'+ (mapcar #'process-turnaround-time workload))
+     (length workload)))
+
 ;;; ------------------- ;;;
 ;;; Scheduling policies ;;;
 ;;; ------------------- ;;;
@@ -70,10 +74,6 @@
   (dolist (process workload)
     (loop :for i :from 1 :to (:run-time process)
           :do (format t "Process ~d: ~d~%" (:pid process) i))))
-
-;; First In, First Out
-(defun fifo (workload)
-  nil)
 
 ;;; ---------- ;;;
 ;;; Simulation ;;;
