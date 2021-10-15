@@ -80,10 +80,6 @@
 ;;; Scheduling policies ;;;
 ;;; ------------------- ;;;
 
-;; Initial workload assumptions (chapter 7, page 1, "Operating Systems: Three Easy Pieces")
-(defparameter *run-time* 10)
-(defparameter *arrival-time* 0)
-
 ;; "First In, First Out" policy
 (defun fifo (workload)
   (let ((time 0))
@@ -99,12 +95,24 @@
 ;;; Simulation ;;;
 ;;; ---------- ;;;
 
-(defun simulate (&key number-of-processes (run-time *run-time*) (arrival-time *arrival-time*))
-  (let ((workload (create-workload :number-of-processes number-of-processes
-                                   :run-time run-time
-                                   :arrival-time arrival-time)))
+;; FIFO same run-time (10) example
+(defun simulate-fifo-same-run-time ()
+  (let ((workload (create-workload-with-same-run-time :number-of-processes 3
+                                                      :run-time 10
+                                                      :arrival-time 0)))
     (print-workload workload)
     (fifo workload)
     (format t "Turnaround time: ~d~%" (turnaround-time workload))))
 
-(simulate :number-of-processes 3)
+(simulate-fifo-same-run-time)
+
+;; FIFO different run-time (100, 10, 10) example
+(defun simulate-fifo-differet-run-time ()
+  (let ((workload (create-workload :number-of-processes 3
+                                                      :run-time '(100 10 10)
+                                                      :arrival-time 0)))
+    (print-workload workload)
+    (fifo workload)
+    (format t "Turnaround time: ~d~%" (turnaround-time workload))))
+
+(simulate-fifo-differet-run-time)
