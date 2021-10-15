@@ -33,7 +33,7 @@
 ;;; Auxiliary functions ;;;
 ;;; ------------------- ;;;
 
-(defun create-processes (&optional (number-of-processes 2))
+(defun create-workload (&optional (number-of-processes 2))
   (loop :repeat number-of-processes
         :do (incf *pid*)
         :collect (make-process :pid *pid* :run-time (1+ (random +max-run-time+)))))
@@ -57,6 +57,6 @@
 ;;; ---------- ;;;
 
 (defun simulate (&optional (number-of-processes 2))
-  (let ((workload (create-processes number-of-processes)))
+  (let ((workload (create-workload number-of-processes)))
     (print-workload workload)
     (no-policy workload)))
