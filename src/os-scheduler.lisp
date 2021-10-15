@@ -7,7 +7,6 @@
 ;;; ------------- ;;;
 
 (defvar *pid* 0)
-(defconstant +max-run-time+ 10)
 
 (deftype process-state () '(member :running :ready :done :waiting))
 
