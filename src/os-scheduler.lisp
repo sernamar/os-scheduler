@@ -33,11 +33,12 @@
                     :documentation "The time when the process was completed.")))
 
 (defun make-process (&key pid (state :ready) run-time (arrival-time 0) completion-time)
-  (make-instance 'process :pid pid
-                          :state state
-                          :run-time run-time
-                          :arrival-time arrival-time
-                          :completion-time completion-time))
+  (make-instance 'process
+                 :pid pid
+                 :state state
+                 :run-time run-time
+                 :arrival-time arrival-time
+                 :completion-time completion-time))
 
 (defmethod process-turnaround-time (process)
   "Compute the turnaround time of a process, which is a scheduling metric defined as the time at which the process completes minus the time at which the process arrived in the system."
@@ -54,8 +55,8 @@
   "Create a number of processes (the workload) with the same arrival-time values, but different run-time values (especified in a list)."
   (when (and (listp run-time) (= number-of-processes (length run-time)))
     (loop :for process-run-time :in run-time
-          :do (incf *pid*)
-          :collect (make-process :pid *pid* :run-time process-run-time :arrival-time arrival-time))))
+       :do (incf *pid*)
+       :collect (make-process :pid *pid* :run-time process-run-time :arrival-time arrival-time))))
 
 (defun create-workload-with-same-run-time (&key number-of-processes run-time (arrival-time 0))
   "Create a number of processes (the workload) with the same arrival-time values and the same run-time values."
@@ -70,7 +71,7 @@
 
 (defun print-process-run-time (process)
   (loop :for i :from (:start-time process) :below (+ (:start-time process) (:run-time process))
-        :do (format t "Process ~d: ~d~%" (:pid process) (1+ i))))
+     :do (format t "Process ~d: ~d~%" (:pid process) (1+ i))))
 
 (defun turnaround-time (workload)
   (/ (reduce #'+ (mapcar #'process-turnaround-time workload))
@@ -109,8 +110,8 @@
 ;; FIFO different run-time (100, 10, 10) example
 (defun simulate-fifo-differet-run-time ()
   (let ((workload (create-workload :number-of-processes 3
-                                                      :run-time '(100 10 10)
-                                                      :arrival-time 0)))
+                                   :run-time '(100 10 10)
+                                   :arrival-time 0)))
     (print-workload workload)
     (fifo workload)
     (format t "Turnaround time: ~d~%" (turnaround-time workload))))
