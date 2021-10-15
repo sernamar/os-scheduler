@@ -73,7 +73,7 @@
 ;;; ------------------- ;;;
 
 ;; Initial workload assumptions (chapter 7, page 1, "Operating Systems: Three Easy Pieces")
-(defparameter *run-time* 3)
+(defparameter *run-time* 10)
 (defparameter *arrival-time* 0)
 
 ;; "First In, First Out" policy
@@ -96,6 +96,7 @@
                                    :run-time run-time
                                    :arrival-time arrival-time)))
     (print-workload workload)
-    (fifo workload)))
+    (fifo workload)
+    (format t "Turnaround time: ~d~%" (turnaround-time workload))))
 
 (simulate :number-of-processes 3)
