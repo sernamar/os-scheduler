@@ -2,6 +2,8 @@
 
 (declaim (optimize safety)) ; necesary to check the type of the slot "state"
 
+(defvar *pid* 0)
+
 (deftype process-state () '(member :running :ready :done :waiting))
 
 (defclass process ()
@@ -21,3 +23,8 @@
 
 (defun make-process (&key pid (state :ready) run-time (arrival-time 0))
   (make-instance 'process :pid pid :state state :run-time run-time :arrival-time arrival-time))
+
+(defun create-processes (&optional (number-of-processes 2))
+  (loop :repeat number-of-processes
+        :do (incf *pid*)
+        :collect (make-process :pid *pid*)))
