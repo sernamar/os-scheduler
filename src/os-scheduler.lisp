@@ -33,10 +33,10 @@
 ;;; Auxiliary functions ;;;
 ;;; ------------------- ;;;
 
-(defun create-workload (&optional (number-of-processes 2))
+(defun create-workload (&key number-of-processes run-time arrival-time)
   (loop :repeat number-of-processes
         :do (incf *pid*)
-        :collect (make-process :pid *pid* :run-time (1+ (random +max-run-time+)))))
+        :collect (make-process :pid *pid* :run-time run-time :arrival-time arrival-time)))
 
 (defun print-workload (workload)
   (dolist (process workload)
@@ -47,6 +47,11 @@
 ;;; Scheduling policies ;;;
 ;;; ------------------- ;;;
 
+;; Initial workload assumptions (chapter 7, page 1, "Operating Systems: Three Easy Pieces")
+(defparameter *run-time* 3)
+(defparameter *arrival-time* 0)
+
+;; No policy
 (defun no-policy (workload)
   (dolist (process workload)
       (loop :for i :from 1 :to (:run-time process)
@@ -56,7 +61,11 @@
 ;;; Simulation ;;;
 ;;; ---------- ;;;
 
-(defun simulate (&optional (number-of-processes 2))
-  (let ((workload (create-workload number-of-processes)))
+(defun simulate (&key number-of-processes (run-time *run-time*) (arrival-time *arrival-time*))
+  (let ((workload (create-workload :number-of-processes number-of-processes
+                                   :run-time run-time
+                                   :arrival-time arrival-time)))
     (print-workload workload)
     (no-policy workload)))
+
+(simulate :number-of-processes 3)
