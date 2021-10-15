@@ -36,8 +36,8 @@
                           :arrival-time arrival-time
                           :completion-time completion-time))
 
-(defmethod turnaround-time (process)
-  "Compute the turnaround time, which is a scheduling metric defined as the time at which the process completes minus the time at which the process arrived in the system."
+(defmethod process-turnaround-time (process)
+  "Compute the turnaround time of a process, which is a scheduling metric defined as the time at which the process completes minus the time at which the process arrived in the system."
   (let ((completion-time (:completion-time process))
         (arrival-time (:arrival-time process)))
     (when completion-time
@@ -70,6 +70,10 @@
   (dolist (process workload)
     (loop :for i :from 1 :to (:run-time process)
           :do (format t "Process ~d: ~d~%" (:pid process) i))))
+
+;; First In, First Out
+(defun fifo (workload)
+  nil)
 
 ;;; ---------- ;;;
 ;;; Simulation ;;;
