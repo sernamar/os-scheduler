@@ -59,12 +59,13 @@
 ;;; Auxiliary functions ;;;
 ;;; ------------------- ;;;
 
-(defun create-workload (&key number-of-processes run-time (arrival-time 0))
-  "Create a number of processes (the workload) with the same arrival-time values, but different run-time values (especified in a list)."
-  (when (and (listp run-time) (= number-of-processes (length run-time)))
+(defun create-workload (&key number-of-processes run-time arrival-time)
+  "Create a number of processes (the workload) with the run-time and arrival-time values especified as lists."
+  (when (and (listp run-time) (listp arrival-time) (= number-of-processes (length run-time) (length arrival-time)))
     (loop :for process-run-time :in run-time
-       :do (incf *pid*)
-       :collect (make-process :pid *pid* :run-time process-run-time :arrival-time arrival-time))))
+          :for process-arrival-time :in arrival-time
+          :do (incf *pid*)
+          :collect (make-process :pid *pid* :run-time process-run-time :arrival-time process-arrival-time))))
 
 (defun create-workload-with-same-run-time (&key number-of-processes run-time (arrival-time 0))
   "Create a number of processes (the workload) with the same arrival-time values and the same run-time values."
@@ -137,7 +138,7 @@
 (defun simulate-fifo-differet-run-time ()
   (let ((workload (create-workload :number-of-processes 3
                                    :run-time '(100 10 10)
-                                   :arrival-time 0)))
+                                   :arrival-time '(0 0 0))))
     (print-workload workload)
     (fifo workload :verbose nil)
     (format t "Turnaround time: ~d~%" (turnaround-time workload))))
@@ -148,7 +149,7 @@
 (defun simulate-shortest-job-first ()
   (let ((workload (create-workload :number-of-processes 3
                                    :run-time '(100 10 10)
-                                   :arrival-time 0)))
+                                   :arrival-time '(0 0 0))))
     (print-workload workload)
     (shortest-job-first workload :verbose nil)
     (format t "Turnaround time: ~d~%" (turnaround-time workload))))
