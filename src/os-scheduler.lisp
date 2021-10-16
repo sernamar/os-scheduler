@@ -82,6 +82,15 @@
     (format t "pid: ~d, state: ~a, run-time: ~d, arrival time: ~d~%"
             (:pid process) (:state process) (:run-time process) (:arrival-time process))))
 
+(defun sort-workload (workload)
+  "Sort workload, first using the process arrival-time, and later the process run-time."
+  (flet ((sorting-function (p1 p2)
+           (cond
+             ((< (:arrival-time p1) (:arrival-time p2)) t)
+             ((> (:arrival-time p1) (:arrival-time p2)) nil)
+             (t (< (:run-time p1) (:run-time p2))))))
+    (sort workload #'sorting-function)))
+
 (defun print-process-run-time (process)
   (loop :for i :from (:start-time process) :below (+ (:start-time process) (:run-time process))
      :do (format t "Process ~d: ~d~%" (:pid process) (1+ i))))
