@@ -90,12 +90,13 @@
 ;;; ------------------- ;;;
 
 ;; "First In, First Out" policy
-(defun fifo (workload)
+(defun fifo (workload &key (verbose t))
   (let ((time 0))
     (dolist (process workload)
       (setf (:start-time process) time)
       (setf (:state process) :running)
-      (print-process-run-time process)
+      (when verbose
+        (print-process-run-time process))
       (setf (:completion-time process) (+ (:start-time process) (:run-time process)))
       (setf (:state process) :done)
       (setf time (:completion-time process)))))
@@ -110,7 +111,7 @@
                                                       :run-time 10
                                                       :arrival-time 0)))
     (print-workload workload)
-    (fifo workload)
+    (fifo workload :verbose nil)
     (format t "Turnaround time: ~d~%" (turnaround-time workload))))
 
 (simulate-fifo-same-run-time)
@@ -121,7 +122,7 @@
                                    :run-time '(100 10 10)
                                    :arrival-time 0)))
     (print-workload workload)
-    (fifo workload)
+    (fifo workload :verbose nil)
     (format t "Turnaround time: ~d~%" (turnaround-time workload))))
 
 (simulate-fifo-differet-run-time)
