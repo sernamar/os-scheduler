@@ -33,9 +33,9 @@
              :accessor :run-time
              :documentation "The time (duration) that the process should run to be considered completed.")
    (time-to-completion :initarg :time-to-completion
-             :initform nil
-             :accessor :time-to-completion
-             :documentation "The remaining time that the process should run to be considered completed.")
+                       :initform nil
+                       :accessor :time-to-completion
+                       :documentation "The remaining time that the process should run to be considered completed.")
    (completion-time :initarg :completion-time
                     :initform nil
                     :accessor :completion-time
@@ -51,11 +51,12 @@
 
 (defmethod print-object ((object process) stream)
   (print-unreadable-object (object stream :type t :identity t)
-    (format stream "~d (state: ~a, arrival-time: ~d, run-time: ~d)"
+    (format stream "~d (state: ~a, arrival-time: ~d, run-time: ~d, time-to-completion: ~d)"
             (:pid object)
             (:state object)
             (:arrival-time object)
-            (:run-time object))))
+            (:run-time object)
+            (:time-to-completion object))))
 
 (defmethod process-turnaround-time (process)
   "Compute the turnaround time of a process, which is a scheduling metric defined as the time at which the process completes minus the time at which the process arrived in the system."
@@ -74,7 +75,9 @@
     (loop :for process-run-time :in run-time
           :for process-arrival-time :in arrival-time
           :do (incf *pid*)
-          :collect (make-process :pid *pid* :run-time process-run-time :arrival-time process-arrival-time))))
+          :collect (make-process :pid *pid*
+                                 :run-time process-run-time
+                                 :arrival-time process-arrival-time))))
 
 (defun create-workload-with-same-run-time (&key number-of-processes run-time (arrival-time 0))
   "Create a number of processes (the workload) with the same arrival-time values and the same run-time values."
@@ -98,7 +101,7 @@
 
 (defun print-process-run-time (process)
   (loop :for i :from (:start-time process) :below (+ (:start-time process) (:run-time process))
-     :do (format t "Process ~d: ~d~%" (:pid process) (1+ i))))
+        :do (format t "Process ~d: ~d~%" (:pid process) (1+ i))))
 
 (defun turnaround-time (workload)
   (/ (reduce #'+ (mapcar #'process-turnaround-time workload))
@@ -139,6 +142,28 @@
       (setf (:completion-time process) (+ (:start-time process) (:run-time process)))
       (setf (:state process) :done)
       (setf time (:completion-time process)))))
+
+(defun shortest-time-to-completion-first (workload &key (verbose t))
+  "'Shortest Time-To-Completion First' scheduling policy."
+  (let ((processes-list (copy-list workload))
+        (current-workload '()))
+    ;; Move new processes (those where arrival-time=time) to current-workload and sort it
+    (loop :for time :from 0
+          :until (and (null processes-list) (null current-workload))
+            :do (let ((new-processes (remove-if-not (lambda (process) (= (:arrival-time process) time)) processes-list)))
+                  (setf processes-list (remove-if (lambda (process) (= (:arrival-time process) time)) processes-list))
+                  (setf current-workload (concatenate 'list current-workload new-processes))
+                  (setf current-workload (sort current-workload #'< :key :time-to-completion))
+
+                  ;; Run first process
+                  (let ((process (first current-workload)))
+                    (when verbose
+                      (format t "~a~%" process))
+                    (decf (:time-to-completion process)))
+
+                  ;; Delete finished processes from current-workload
+                  (setf current-workload (remove-if (lambda (process) (= (:time-to-completion process) 0)) current-workload)))
+          :finally (format t "Workload completed in ~d" time))))
 
 
 ;;; ---------- ;;;
@@ -188,3 +213,13 @@
     (format t "Turnaround time: ~d~%" (turnaround-time workload))))
 
 (simulate-shortest-job-first-with-different-arrival-times)
+
+;; Shortest Time-To-Completion First with different arrival times example
+(defun simulate-shortest-time-to-completion-first-with-different-arrival-times ()
+  (let ((workload (create-workload :number-of-processes 3
+                                   :run-time '(100 10 10)
+                                   :arrival-time '(0 10 10))))
+    (print-workload workload)
+    (shortest-time-to-completion-first workload :verbose nil)))
+
+(simulate-shortest-time-to-completion-first-with-different-arrival-times)
