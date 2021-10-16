@@ -103,7 +103,7 @@
 
 (defun shortest-job-first (workload &key (verbose t))
   "'Shortest Job First' scheduling policy."
-  (fifo (sort workload (lambda (p1 p2) (< (:run-time p1) (:run-time p2))))
+  (fifo (sort workload #'< :key :run-time)
         :verbose verbose))
 
 
