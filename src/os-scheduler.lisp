@@ -106,7 +106,7 @@
 (defun shortest-job-first (workload &key (verbose t))
   "'Shortest Job First' scheduling policy."
   ; Sort the workload by :RUN-TIME or :ARRIVAL-TIME
-  (let ((arrival-times (mapcar :arrival-time *workload*)))
+  (let ((arrival-times (mapcar :arrival-time workload)))
     (if (every #'equal arrival-times (rest arrival-times)) ; all processes arrived at the same time
         (sort workload #'< :key :run-time)
         (sort workload #'< :key :arrival-time)))
