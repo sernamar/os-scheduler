@@ -32,13 +32,12 @@
                     :accessor :completion-time
                     :documentation "The time when the process was completed.")))
 
-(defun make-process (&key pid (state :ready) run-time (arrival-time 0) completion-time)
+(defun make-process (&key pid (state :ready) run-time (arrival-time 0))
   (make-instance 'process
                  :pid pid
                  :state state
                  :run-time run-time
-                 :arrival-time arrival-time
-                 :completion-time completion-time))
+                 :arrival-time arrival-time))
 
 (defmethod process-turnaround-time (process)
   "Compute the turnaround time of a process, which is a scheduling metric defined as the time at which the process completes minus the time at which the process arrived in the system."
