@@ -31,7 +31,11 @@
    (run-time :initarg :run-time
              :initform nil
              :accessor :run-time
-             :documentation "The time (duration) that the process should be run by the system to be considered completed.")
+             :documentation "The time (duration) that the process should run to be considered completed.")
+   (time-to-completion :initarg :time-to-completion
+             :initform nil
+             :accessor :time-to-completion
+             :documentation "The remaining time that the process should run to be considered completed.")
    (completion-time :initarg :completion-time
                     :initform nil
                     :accessor :completion-time
@@ -41,8 +45,9 @@
   (make-instance 'process
                  :pid pid
                  :state state
+                 :arrival-time arrival-time
                  :run-time run-time
-                 :arrival-time arrival-time))
+                 :time-to-completion run-time))
 
 (defmethod print-object ((object process) stream)
   (print-unreadable-object (object stream :type t :identity t)
