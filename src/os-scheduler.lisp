@@ -89,8 +89,8 @@
 ;;; Scheduling policies ;;;
 ;;; ------------------- ;;;
 
-;; "First In, First Out" policy
 (defun fifo (workload &key (verbose t))
+  "'First In, First Out' scheduling policy."
   (let ((time 0))
     (dolist (process workload)
       (setf (:start-time process) time)
@@ -100,6 +100,12 @@
       (setf (:completion-time process) (+ (:start-time process) (:run-time process)))
       (setf (:state process) :done)
       (setf time (:completion-time process)))))
+
+(defun shortest-job-first (workload &key (verbose t))
+  "'Shortest Job First' scheduling policy."
+  (fifo (sort workload (lambda (p1 p2) (< (:run-time p1) (:run-time p2))))
+        :verbose verbose))
+
 
 ;;; ---------- ;;;
 ;;; Simulation ;;;
@@ -126,3 +132,14 @@
     (format t "Turnaround time: ~d~%" (turnaround-time workload))))
 
 (simulate-fifo-differet-run-time)
+
+;; Shortest Job First example
+(defun simulate-shortest-job-first ()
+  (let ((workload (create-workload :number-of-processes 3
+                                   :run-time '(100 10 10)
+                                   :arrival-time 0)))
+    (print-workload workload)
+    (shortest-job-first workload :verbose nil)
+    (format t "Turnaround time: ~d~%" (turnaround-time workload))))
+
+(simulate-shortest-job-first)
