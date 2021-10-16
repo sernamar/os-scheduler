@@ -44,6 +44,10 @@
                  :run-time run-time
                  :arrival-time arrival-time))
 
+(defmethod print-object ((object process) stream)
+  (print-unreadable-object (object stream :type t :identity t)
+    (format stream "~d (state: ~a)" (:pid object) (:state object))))
+
 (defmethod process-turnaround-time (process)
   "Compute the turnaround time of a process, which is a scheduling metric defined as the time at which the process completes minus the time at which the process arrived in the system."
   (let ((completion-time (:completion-time process))
