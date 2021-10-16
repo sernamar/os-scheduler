@@ -51,12 +51,14 @@
 
 (defmethod print-object ((object process) stream)
   (print-unreadable-object (object stream :type t :identity t)
-    (format stream "~d (state: ~a, arrival-time: ~d, run-time: ~d, time-to-completion: ~d)"
+    (format stream "~d (state: ~a, arrival-time: ~d, run-time: ~d, start-time: ~d, time-to-completion: ~d, completion-time: ~d)"
             (:pid object)
             (:state object)
             (:arrival-time object)
             (:run-time object)
-            (:time-to-completion object))))
+            (:start-time object)
+            (:time-to-completion object)
+            (:completion-time object))))
 
 (defmethod process-turnaround-time (process)
   "Compute the turnaround time of a process, which is a scheduling metric defined as the time at which the process completes minus the time at which the process arrived in the system."
@@ -145,13 +147,13 @@
 
 (defun shortest-time-to-completion-first (workload &key (verbose t))
   "'Shortest Time-To-Completion First' scheduling policy."
-  (let ((processes-list (copy-list workload))
-        (current-workload '()))
+  (let ((current-workload '()))
     ;; Move new processes (those where arrival-time=time) to current-workload and sort it
     (loop :for time :from 0
-          :until (and (null processes-list) (null current-workload))
-            :do (let ((new-processes (remove-if-not (lambda (process) (= (:arrival-time process) time)) processes-list)))
-                  (setf processes-list (remove-if (lambda (process) (= (:arrival-time process) time)) processes-list))
+          :with number-of-added-processes = 0
+          :until (and (= number-of-added-processes (length workload)) (null current-workload))
+            :do (let ((new-processes (remove-if-not (lambda (process) (= (:arrival-time process) time)) workload)))
+                  (incf number-of-added-processes (length new-processes))
                   (setf current-workload (concatenate 'list current-workload new-processes))
                   (setf current-workload (sort current-workload #'< :key :time-to-completion))
 
@@ -159,11 +161,17 @@
                   (let ((process (first current-workload)))
                     (when verbose
                       (format t "~a~%" process))
-                    (decf (:time-to-completion process)))
+                    (unless (:start-time process)
+                      (setf (:start-time process) time))
+                    (decf (:time-to-completion process))
 
-                  ;; Delete finished processes from current-workload
-                  (setf current-workload (remove-if (lambda (process) (= (:time-to-completion process) 0)) current-workload)))
-          :finally (format t "Workload completed in ~d" time))))
+                    ;; Delete finished processes from current-workload
+                    (when (= (:time-to-completion process) 0)
+                      (setf current-workload (remove-if
+                                              (lambda (process) (= (:time-to-completion process) 0)) current-workload))
+                      (setf (:completion-time process) (1+ time))
+                      (setf (:state process) :done))))))
+  workload)
 
 
 ;;; ---------- ;;;
@@ -220,6 +228,7 @@
                                    :run-time '(100 10 10)
                                    :arrival-time '(0 10 10))))
     (print-workload workload)
-    (shortest-time-to-completion-first workload :verbose nil)))
+    (shortest-time-to-completion-first workload :verbose nil)
+    (format t "Turnaround time: ~d~%" (turnaround-time workload))))
 
 (simulate-shortest-time-to-completion-first-with-different-arrival-times)
