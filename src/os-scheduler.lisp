@@ -105,15 +105,15 @@
 
 (defun shortest-job-first (workload &key (verbose t))
   "'Shortest Job First' scheduling policy."
-  ; Sort the workload by :RUN-TIME or :ARRIVAL-TIME
-  (let ((arrival-times (mapcar :arrival-time workload)))
+  (let ((time 0)
+        (arrival-times (mapcar :arrival-time workload))
+        (sorted-workload nil))
+    ;; Sort the workload by :RUN-TIME or :ARRIVAL-TIME
     (if (every #'equal arrival-times (rest arrival-times)) ; all processes arrived at the same time
-        (sort workload #'< :key :run-time)
-        (sort workload #'< :key :arrival-time)))
-  
-  ;; Run the sorted workload sequentially
-  (let ((time 0))
-    (dolist (process workload)
+        (setf sorted-workload (sort (copy-list workload) #'< :key :run-time))
+        (setf sorted-workload (sort (copy-list workload) #'< :key :arrival-time)))
+    ;; Run the sorted workload sequentially
+    (dolist (process sorted-workload)
       (setf (:start-time process) time)
       (setf (:state process) :running)
       (when verbose
