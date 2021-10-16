@@ -12,6 +12,7 @@
 
 (defclass process ()
   ((pid :initarg :pid
+        :initform nil
         :accessor :pid
         :documentation "Process identifier.")
    (state :initarg :state
@@ -20,15 +21,19 @@
           :accessor :state
           :documentation "Process state (:running, :ready, :done, or :waiting).")
    (arrival-time :initarg :arrival-time
+                 :initform nil
                  :accessor :arrival-time
                  :documentation "The time that the process arrives to the system.")
    (start-time :initarg :start-time
+               :initform nil
                :accessor :start-time
                :documentation "The time that the system starts executing the process.")
    (run-time :initarg :run-time
+             :initform nil
              :accessor :run-time
              :documentation "The time (duration) that the process should be run by the system to be considered completed.")
    (completion-time :initarg :completion-time
+                    :initform nil
                     :accessor :completion-time
                     :documentation "The time when the process was completed.")))
 
