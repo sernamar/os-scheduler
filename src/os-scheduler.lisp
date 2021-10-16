@@ -91,6 +91,7 @@
 
 (defun fifo (workload &key (verbose t))
   "'First In, First Out' scheduling policy."
+  ;; Run the workload sequentially
   (let ((time 0))
     (dolist (process workload)
       (setf (:start-time process) time)
@@ -103,8 +104,18 @@
 
 (defun shortest-job-first (workload &key (verbose t))
   "'Shortest Job First' scheduling policy."
-  (fifo (sort workload #'< :key :run-time)
-        :verbose verbose))
+  ;; Sort the workload by :RUN-TIME
+  (sort workload #'< :key :run-time)
+  ;; Run the sorted workload sequentially
+  (let ((time 0))
+    (dolist (process workload)
+      (setf (:start-time process) time)
+      (setf (:state process) :running)
+      (when verbose
+        (print-process-run-time process))
+      (setf (:completion-time process) (+ (:start-time process) (:run-time process)))
+      (setf (:state process) :done)
+      (setf time (:completion-time process)))))
 
 
 ;;; ---------- ;;;
