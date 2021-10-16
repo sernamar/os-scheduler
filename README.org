@@ -1,5 +1,5 @@
 * os-scheduler
-Operating System Scheduler Simulator
-
+  Operating System Scheduler Simulator
 ** Scheduling policies
    - First In, First Out (FIFO)
+   - Shortest Job First
