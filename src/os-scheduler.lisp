@@ -105,8 +105,12 @@
 
 (defun shortest-job-first (workload &key (verbose t))
   "'Shortest Job First' scheduling policy."
-  ;; Sort the workload by :RUN-TIME
-  (sort workload #'< :key :run-time)
+  ; Sort the workload by :RUN-TIME or :ARRIVAL-TIME
+  (let ((arrival-times (mapcar :arrival-time *workload*)))
+    (if (every #'equal arrival-times (rest arrival-times)) ; all processes arrived at the same time
+        (sort workload #'< :key :run-time)
+        (sort workload #'< :key :arrival-time)))
+  
   ;; Run the sorted workload sequentially
   (let ((time 0))
     (dolist (process workload)
@@ -155,3 +159,14 @@
     (format t "Turnaround time: ~d~%" (turnaround-time workload))))
 
 (simulate-shortest-job-first)
+
+;; Shortest Job First with different arrival times example
+(defun simulate-shortest-job-first-with-different-arrival-times ()
+  (let ((workload (create-workload :number-of-processes 3
+                                   :run-time '(100 10 10)
+                                   :arrival-time '(0 10 10))))
+    (print-workload workload)
+    (shortest-job-first workload :verbose nil)
+    (format t "Turnaround time: ~d~%" (turnaround-time workload))))
+
+(simulate-shortest-job-first-with-different-arrival-times)
