@@ -3,5 +3,6 @@
 ** Scheduling policies
    - First In, First Out (FIFO)
    - Shortest Job First
+   - Shortest Time-To-Completion First
 ** Reference:
    [[https://pages.cs.wisc.edu/~remzi/OSTEP/][Operating Systems: Three Easy Pieces]]
