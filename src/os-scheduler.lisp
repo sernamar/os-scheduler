@@ -184,6 +184,31 @@
                       (setf (:state process) :done))))))
   workload)
 
+(defun round-robin (workload &key (time-slice 1) (verbose t))
+  "'Round-Robin' scheduling policy."
+  ;; In a first attemp, we'll just suposse that every process arrived at the same time (:arrival-time equals 0 for every process)
+  ;; and that time-slice is 1 (we run processes using the DOLIST macro)
+  (loop :for time :from 0
+        :with current-workload = workload
+        :until (null current-workload)
+        :do (dolist (process current-workload)
+              ;; update process' slot and increment the time variable
+              (unless (:start-time process)
+                (setf (:start-time process) time))
+              (decf (:time-to-completion process))
+              (incf time)
+              ;; print info
+              (when verbose
+                (format t "time: ~d, pid: ~d, time-to-completion: ~d~%"
+                        time (:pid process) (:time-to-completion process)))
+              ;; delete finished processes from current-workload
+              (when (zerop (:time-to-completion process))
+                (setf current-workload (remove-if
+                                        (lambda (process) (zerop (:time-to-completion process))) current-workload))
+                (setf (:completion-time process) (1+ time))
+                (setf (:state process) :done))))
+  workload)
+
 
 ;;; ---------- ;;;
 ;;; Simulation ;;;
@@ -234,7 +259,7 @@
 (simulate-shortest-job-first-with-different-arrival-times)
 
 ;; Shortest Time-To-Completion First with different arrival times example
-(defun simulate-shortest-time-to-completion-first-with-different-arrival-times ()
+(defun simulate-shortest-time-to-completion-first -with-different-arrival-times ()
   (let ((workload (create-workload :number-of-processes 3
                                    :run-time '(100 10 10)
                                    :arrival-time '(0 10 10))))
