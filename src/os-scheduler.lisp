@@ -263,7 +263,7 @@
 (simulate-shortest-job-first-with-different-arrival-times)
 
 ;; Shortest Time-To-Completion First with different arrival times example
-(defun simulate-shortest-time-to-completion-first -with-different-arrival-times ()
+(defun simulate-shortest-time-to-completion-first-with-different-arrival-times ()
   (let ((workload (create-workload :number-of-processes 3
                                    :run-time '(100 10 10)
                                    :arrival-time '(0 10 10))))
@@ -272,3 +272,15 @@
     (format t "Turnaround time: ~d~%" (turnaround-time workload))))
 
 (simulate-shortest-time-to-completion-first-with-different-arrival-times)
+
+;; Shortest Time-To-Completion First with different arrival times example
+(defun simulate-round-robin ()
+  (let ((workload (create-workload :number-of-processes 3
+                                   :run-time '(5 5 5)
+                                   :arrival-time '(0 0 0))))
+    (print-workload workload)
+    (round-robin workload :verbose nil)
+    (format t "Turnaround time: ~d~%" (turnaround-time workload))
+    (format t "Response time: ~d~%" (response-time workload))))
+
+(simulate-round-robin)
