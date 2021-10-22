@@ -184,10 +184,10 @@
                       (setf (:state process) :done))))))
   workload)
 
-(defun round-robin (workload &key (time-slice 1) (verbose t))
+(defun round-robin (workload &key (verbose t))
   "'Round-Robin' scheduling policy."
   ;; In a first attemp, we'll just suposse that every process arrived at the same time (:arrival-time equals 0 for every process)
-  ;; and that time-slice is 1 (we run processes using the DOLIST macro)
+  ;; and that time-slice is 1
   (loop :for global-time :from 1
         :with current-workload = workload
         :until (null current-workload)
