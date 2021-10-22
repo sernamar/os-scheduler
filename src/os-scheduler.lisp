@@ -67,6 +67,13 @@
     (when completion-time
       (- completion-time arrival-time))))
 
+(defmethod process-response-time (process)
+  "Compute the response time of a process, which is a scheduling metric defined as the time at which the process runs for the first time minus the time at which the process arrived in the system."
+  (let ((start-time (:start-time process))
+        (arrival-time (:arrival-time process)))
+    (when start-time
+      (- start-time arrival-time))))
+
 ;;; ------------------- ;;;
 ;;; Auxiliary functions ;;;
 ;;; ------------------- ;;;
@@ -107,6 +114,10 @@
 
 (defun turnaround-time (workload)
   (/ (reduce #'+ (mapcar #'process-turnaround-time workload))
+     (length workload)))
+
+(defun response-time (workload)
+  (/ (reduce #'+ (mapcar #'process-response-time workload))
      (length workload)))
 
 ;;; ------------------- ;;;
