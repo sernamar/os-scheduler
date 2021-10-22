@@ -4,5 +4,6 @@
    - First In, First Out (FIFO)
    - Shortest Job First
    - Shortest Time-To-Completion First
+   - Round-Robin (simplifications: every process arrived at time 0, runs for the same time, and the time-slice is 1)
 ** Reference:
    [[https://pages.cs.wisc.edu/~remzi/OSTEP/][Operating Systems: Three Easy Pieces]]
