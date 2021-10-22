@@ -188,25 +188,29 @@
   "'Round-Robin' scheduling policy."
   ;; In a first attemp, we'll just suposse that every process arrived at the same time (:arrival-time equals 0 for every process)
   ;; and that time-slice is 1 (we run processes using the DOLIST macro)
-  (loop :for time :from 0
+  (loop :for global-time :from 1
         :with current-workload = workload
         :until (null current-workload)
-        :do (dolist (process current-workload)
-              ;; update process' slot and increment the time variable
-              (unless (:start-time process)
-                (setf (:start-time process) time))
-              (decf (:time-to-completion process))
-              (incf time)
-              ;; print info
-              (when verbose
-                (format t "time: ~d, pid: ~d, time-to-completion: ~d~%"
-                        time (:pid process) (:time-to-completion process)))
-              ;; delete finished processes from current-workload
-              (when (zerop (:time-to-completion process))
-                (setf current-workload (remove-if
-                                        (lambda (process) (zerop (:time-to-completion process))) current-workload))
-                (setf (:completion-time process) (1+ time))
-                (setf (:state process) :done))))
+        :do (loop :for process :in current-workload
+                  :for time :from global-time
+                  :do (progn
+                        ;; update process' slot and increment the time variable
+                        (unless (:start-time process)
+                          (setf (:start-time process) time))
+                        (decf (:time-to-completion process))
+                        
+                        ;; print info
+                        (when verbose
+                          (format t "time: ~d, pid: ~d, time-to-completion: ~d~%"
+                                  time (:pid process) (:time-to-completion process)))
+
+                        ;; delete finished processes from current-workload
+                        (when (zerop (:time-to-completion process))
+                          (setf current-workload (remove-if
+                                                  (lambda (process) (zerop (:time-to-completion process))) current-workload))
+                          (setf (:completion-time process) (1+ time))
+                          (setf (:state process) :done)))
+                  :finally (setf global-time time)))
   workload)
 
 
