@@ -273,14 +273,26 @@
 
 (simulate-shortest-time-to-completion-first-with-different-arrival-times)
 
-;; Shortest Time-To-Completion First with different arrival times example
+;; Round-Robin example. First we show the SJF policy and later the Round-Robin one
 (defun simulate-round-robin ()
-  (let ((workload (create-workload :number-of-processes 3
+  (let ((workload-1 (create-workload :number-of-processes 3
                                    :run-time '(5 5 5)
-                                   :arrival-time '(0 0 0))))
-    (print-workload workload)
-    (round-robin workload :verbose nil)
-    (format t "Turnaround time: ~d~%" (turnaround-time workload))
-    (format t "Response time: ~d~%" (response-time workload))))
+                                     :arrival-time '(0 0 0)))
+        (workload-2 (create-workload :number-of-processes 3
+                                   :run-time '(5 5 5)
+                                     :arrival-time '(0 0 0))))
+    ;; Shortest Job First
+    (format t "~%'Shortest Job First' policy~%")
+    (print-workload workload-1)
+    (shortest-job-first workload-1 :verbose nil)
+    (format t "Turnaround time: ~d~%" (turnaround-time workload-1))
+    (format t "Response time: ~d~%" (response-time workload-1))
+
+    ;; Round-Robin
+    (format t "~%'Round-Robin' policy~%")
+    (print-workload workload-2)
+    (round-robin workload-2 :verbose nil)
+    (format t "Turnaround time: ~d~%" (turnaround-time workload-2))
+    (format t "Response time: ~d~%" (response-time workload-2))))
 
 (simulate-round-robin)
