@@ -177,9 +177,9 @@
                     (decf (:time-to-completion process))
 
                     ;; Delete finished processes from current-workload
-                    (when (= (:time-to-completion process) 0)
+                    (when (zerop (:time-to-completion process))
                       (setf current-workload (remove-if
-                                              (lambda (process) (= (:time-to-completion process) 0)) current-workload))
+                                              (lambda (process) (zerop (:time-to-completion process))) current-workload))
                       (setf (:completion-time process) (1+ time))
                       (setf (:state process) :done))))))
   workload)
